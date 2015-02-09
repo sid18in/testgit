@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<head>
+    <meta charset=utf-8>
+    <meta name="description" content="Mousetrap is a simple keyboard shortcut library written in Javascript.">
+    <title>Mousetrap - Keyboard shortcuts in Javascript</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/img/favicon/mousetrap.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/assets/img/favicon/mousetrap.png">
+
+    <link href="/assets/css/mousetrap.css" rel="stylesheet">
+    <link href="/assets/rainbow-themes/github.css" rel="stylesheet">
+    <!--[if lt IE 9]>
+        <script src="/assets/js/html5.js"></script>
+    <![endif]-->
+    <script>
+        function supportsSVG() {
+            return !!document.createElementNS && !!document.createElementNS('http://www.w3.org/2000/svg', "svg").createSVGRect;
+        }
+    </script>
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1><a id="logo" href="/killing/mice">Mousetrap</a></h1>
+            <a target="_blank" href="https://github.com/ccampbell/mousetrap"><img class="github" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+            <p class="intro">A simple library for handling keyboard shortcuts in Javascript.<br>
+                Try pressing some of the keys here:</p>
+        </header>
+        <pre data-language="javascript">
+<code id="line-1">// single keys</code>
+<code id="line-2">Mousetrap.bind('4', function() { highlight(2); });</code>
+<code id="line-3">Mousetrap.bind('x', function() { highlight(3); }, 'keyup');</code>
+<code id="line-4"></code>
+<code id="line-5">// combinations</code>
+<code id="line-6">Mousetrap.bind('command+shift+k', function(e) {</code>
+<code id="line-7">    highlight([6, 7, 8, 9]);</code>
+<code id="line-8">    return false;</code>
+<code id="line-9">});</code>
+<code id="line-10"></code>
+<code id="line-11">Mousetrap.bind(['command+k', 'ctrl+k'], function(e) {</code>
+<code id="line-12">    highlight([11, 12, 13, 14]);</code>
+<code id="line-13">    return false;</code>
+<code id="line-14">});</code>
+<code id="line-15"></code>
+<code id="line-16">// gmail style sequences</code>
+<code id="line-17">Mousetrap.bind('g i', function() { highlight(17); });</code>
+<code id="line-18">Mousetrap.bind('* a', function() { highlight(18); });</code>
+<code id="line-19"></code>
+<code id="line-20">// konami code!</code>
+<code id="line-21">Mousetrap.bind('up up down down left right left right b a enter', function() {</code>
+<code id="line-22">    highlight([21, 22, 23]);</code>
+<code id="line-23">});</code></pre>
+
+        <h2>Introduction</h2>
+
+        <p>Mousetrap is a standalone library with no external dependencies.  It weighs in at around <strong>1.6kb</strong> minified and gzipped and <strong>3kb</strong> minified.</p>
+        <p>What are you waiting for?  Throw away your mouse and <a target="_blank" href="/assets/js/mousetrap/mousetrap.min.js">download it now</a>.</p>
+
+        <h2>Browser Support</h2>
+
+        <p>Mousetrap has been tested and should work in</p>
+        <ul>
+            <li>Internet Explorer 6+</li>
+            <li>Safari</li>
+            <li>Firefox</li>
+            <li>Chrome</li>
+        </ul>
+
+        <h2>Supported Keys</h2>
+
+        <p>For modifier keys you can use <code>shift</code>, <code>ctrl</code>, <code>alt</code>, <code>option</code>, <code>meta</code>, and <code>command</code>.</p>
+
+        <p>Other special keys are <code>backspace</code>, <code>tab</code>, <code>enter</code>, <code>return</code>, <code>capslock</code>, <code>esc</code>, <code>escape</code>, <code>space</code>, <code>pageup</code>, <code>pagedown</code>, <code>end</code>, <code>home</code>, <code>left</code>, <code>up</code>, <code>right</code>, <code>down</code>, <code>ins</code>, and <code>del</code>.</p>
+
+        <p>Any other key you should be able to reference by name like <code>a</code>, <code>/</code>, <code>$</code>, <code>*</code>, or <code>=</code>.</p>
+
+        <h2>API Reference</h2>
+
+        <h3>I. Mousetrap.bind</h3>
+
+        <p>The bind method is the main call you will be making.  This will bind a specified keyboard command to a callback method.</p>
+
+        <h4>Single key</h4>
+        <pre><code data-language="javascript">Mousetrap.bind('/', _focusSearch);</code></pre>
+        <p>There is a third argument you can use to specify the type of event to listen for.  It can be <code>keypress</code>, <code>keydown</code> or <code>keyup</code>.</p>
+
+        <p>It is recommended that you leave this argument out if you are unsure.  Mousetrap will look at the keys you are binding and determine whether it should default to <code>keypress</code> or <code>keydown</code>.</p>
+
+        <h4>Combination of keys</h4>
+        <pre><code data-language="javascript">Mousetrap.bind('ctrl+s', function(e) {
+    _saveDraft();
+});</code></pre>
+        <p>If you want to bind multiple key commands to the same callback you can pass in an array for the first argument:</p>
+        <pre><code data-language="javascript">Mousetrap.bind(['ctrl+s', 'command+s'], function(e) {
+    _saveDraft();
+});</code></pre>
+
+        <p>Note that modifier keys are not explicitly tracked but rather are referenced using <code>e.shiftKey</code>, <code>e.metaKey</code>, <code>e.ctrlKey</code>, and <code>e.altKey</code>.</p>
+
+        <p>This is more reliable than tracking because if you are holding one of the modifier keys down when you focus the window the browser won't get a keydown event for that key.</p>
+
+        <h4>Sequence of keys</h4>
+        <pre><code data-language="javascript">Mousetrap.bind('* a', _selectAll, 'keydown');</code></pre>
+        <p>This feature was inspired by Gmail.  Any keys separated by a space will be considered a sequence.  If you type each key in order the final one in the sequence will trigger the callback.  If you type a key not in the sequence or wait too long the sequence will reset.</p>
+
+        <p>You can also make a sequence that includes key combinations within it.</p>
+        <pre><code data-language="javascript">Mousetrap.bind('g o command+enter', function() { /* do something */ });</code></pre>
+
+        <p>Any key events that would normally fire for keys within a sequence will not fire if they are pressed within the context of that sequence.</p>
+        <p>For example if you have a keydown listener for the <code>o</code> key and you press <code>o</code> as part of the sequence above, the event for <code>o</code> on its own will not fire.  As soon as the sequence is broken it will fire again.</p>
+
+        <p>It is important to note that Mousetrap can get very confused if you have a single key handler that uses the same key that a sequence starts with.  This is because it can't tell if you are starting the sequence or if you are pressing that key on its own.</p>
+
+        <h4>Shift key</h4>
+        <pre><code data-language="javascript">Mousetrap.bind('?', function() { alert('keyboard shortcuts'); });</code></pre>
+
+        <p>Keys that require <code>shift</code> are handled magically for you.  They should just work.  With <code>keypress</code> events they will try to match the character and for <code>keyup</code> and <code>keydown</code> there is a mapping to allow them to work.</p>
+
+        <p>Note that <code>keypress</code> is the most reliable for non US keyboards</p>
+
+        <h4>Text fields</h4>
+        <p>By default all keyboard events will <strong>not</strong> fire if you are inside of a <code>textarea</code>, <code>input</code>, or <code>select</code> to prevent undesirable things from happening.</p>
+        <p>If for whatever reason you want them to you can add the class <code>mousetrap</code> to the element.</p>
+
+        <pre><code data-language="html">&lt;textarea name="message" class="mousetrap"&gt;&lt;/textarea&gt;</code></pre>
+
+        <h4>Overwriting a specific event</h4>
+        <p>If you bind the same key event later on in your script it should overwrite the original callback you had specified.</p>
+
+        <h4>Stopping the default behavior</h4>
+        <p>This is not usually a good practice, but sometimes you may want to overwrite the default behavior of a keyboard combination in the browser.</p>
+        <p>For example let's say you want to focus a form input without typing that key into it or you have a text input that you want to save when the user presses <code>ctrl+s</code>.  You have a couple ways you can achieve this.</p>
+        <p>You can explicitly prevent the default behavior:</p>
+
+        <pre><code data-language="javascript">Mousetrap.bind(['ctrl+s', 'meta+s'], function(e) {
+    if (e.preventDefault) {
+        e.preventDefault();
+    } else {
+        // internet explorer
+        e.returnValue = false;
+    }
+    _saveDraft();
+});</code></pre>
+
+        <p>You can see here that the callback function gets passed the original key event that triggered it.</p>
+
+        <p>As a convenience you can also return false in your callback:</p>
+
+        <pre><code data-language="javascript">Mousetrap.bind(['ctrl+s', 'meta+s'], function(e) {
+    _saveDraft();
+    return false;
+});</code></pre>
+
+        <p>Returning <code>false</code> here works the same way as jQuery's <code>return false</code>.  It prevents the default action and stops the event from bubbling up.</p>
+
+        <h3>II. Mousetrap.unbind</h3>
+        <pre><code data-language="javascript">Mousetrap.unbind('?');</code></pre>
+        <p>This method will unbind a single keyboard event.  You should pass in the key combination exactly as it was passed in originally to <code>bind</code>.</p>
+
+        <h3>III. Mousetrap.trigger</h3>
+        <pre><code data-language="javascript">Mousetrap.trigger('esc');</code></pre>
+        <p>Any keyboard event that has been bound can be triggered by passing in the string you used when you bound it originally.</p>
+        <p>Note that this is not actually triggering a key event in the browser. It is simply firing the event you bound to that key within mousetrap</p>
+        <p>This method also accepts an optional argument for what type of event to trigger</p>
+
+        <h3>IV. Mousetrap.reset</h3>
+        <pre><code data-language="javascript">Mousetrap.reset();</code></pre>
+        <p>The reset method will remove anything you have bound to mousetrap.  This can be useful if you want to change contexts in your application without refreshing the page in your browser.  You can ajax in a new page, call reset, and then bind the key events needed for that page.</p>
+
+        <p>Internally mousetrap keeps an associative array of all the events to listen for so reset does not actually remove or add event listeners on the document.  It just sets the array to be empty.</p>
+
+        <h2>Support and Bugs</h2>
+        <p>If you are having trouble, have found a bug, or want to contribute don't be shy.<br><a target="_blank" href="http://github.com/ccampbell/mousetrap/issues">Open a ticket</a> on <a target="_blank" href="http://github.com/ccampbell/mousetrap">Github</a>.
+    </div>
+    <div class="footer">
+        <p>created by <a href="/">Craig Campbell</a> in 2012</p>
+    </div>
+    <script src="/assets/js/mousetrap/rainbow-custom.min.js"></script>
+    <script src="/assets/js/mousetrap/mousetrap.js"></script>
+    <script>
+        if (!supportsSVG()) {
+            document.getElementById('logo').className = 'no_svg';
+        }
+
+        (function () {
+            var timeouts = {};
+
+            function _remove(lines) {
+                for (var i = 0; i < lines.length; ++i) {
+                    document.getElementById('line-' + lines[i]).className = '';
+                }
+            }
+
+            function highlight(line) {
+                var lines = line instanceof Array ? line : [line],
+                    i,
+                    code;
+
+                for (i = 0; i < lines.length; ++i) {
+                    code = document.getElementById('line-' + lines[i]);
+                    code.className = 'highlight';
+
+                    if (timeouts[lines[i]]) {
+                        clearTimeout(timeouts[lines[i]]);
+                        delete timeouts[lines[i]];
+                    }
+
+                    timeouts[lines[i]] = setTimeout(function() {
+                        _remove(lines);
+                    }, 1500);
+                }
+            }
+
+            // single keys
+            Mousetrap.bind('4', function() { highlight(2); });
+            Mousetrap.bind('x', function() { highlight(3); }, 'keyup');
+
+            // combinations
+            Mousetrap.bind('command+shift+k', function(e) {
+                highlight([6, 7, 8, 9]);
+                return false;
+            });
+
+            Mousetrap.bind(['command+k', 'ctrl+k'], function(e) {
+                highlight([11, 12, 13, 14]);
+                return false;
+            });
+
+            // gmail style sequences
+            Mousetrap.bind('g i', function() { highlight(17); });
+            Mousetrap.bind('* a', function() { highlight(18); });
+
+            // konami code!
+            Mousetrap.bind('up up down down left right left right b a enter', function() {
+                highlight([21, 22, 23]);
+            });
+
+            // check out my band
+            Mousetrap.bind('space command', function() {
+                window.location = 'http://spacecommandmusic.com';
+            });
+        }) ();
+    </script>
+        <script>
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-7604706-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        }) ();
+    </script>
+</body>
